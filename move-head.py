@@ -5,7 +5,7 @@ import sys, time
 import pybullet as pb
 from qibullet import SimulationManager
 from qibullet import NaoVirtual
-from UtilityFuncs import Lerp
+# from UtilityFuncs import Lerp
 
 
 if __name__ == "__main__":
@@ -42,7 +42,7 @@ if __name__ == "__main__":
                 robot.setAngles("HeadYaw", lowerlimit, speed)
             elif curr_angle <= lowerlimit+0.05:
                 robot.setAngles("HeadYaw", upperlimit, speed)
-            # simulation_manager.stepSimulation(client)
+            simulation_manager.stepSimulation(client)
 
     except KeyboardInterrupt:
         pass
