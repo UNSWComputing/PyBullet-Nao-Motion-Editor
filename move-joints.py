@@ -1,8 +1,12 @@
 import sys
 import time
+import math
 import pybullet as pb
 from qibullet import SimulationManager
 from qibullet import NaoVirtual
+
+from MotionGenerator import MotionGenerator as MG
+from UtilityFuncs import ChangeNaoJointOrder
 
 PI = 3.1415926535
 
@@ -20,7 +24,7 @@ if __name__ == "__main__":
     joint_parameters = list()
 
     for name, joint in robot.joint_dict.items():
-        if "Finger" not in name and "Thumb" not in name:
+        if "Finger" not in name and "Thumb" not in name and "RHipYawPitch" not in name:
             joint_parameters.append((
                 pb.addUserDebugParameter(
                     name,
@@ -33,17 +37,31 @@ if __name__ == "__main__":
     rotate_Y_slider = pb.addUserDebugParameter("Rotate Y", -PI, PI, 0.0)
     rotate_Z_slider = pb.addUserDebugParameter("Rotate Z", -PI, PI, 0.0)
 
+    capture_joint_values_button = pb.addUserDebugParameter("Capture Keyframe", 1, 0, 0)
+
     try:
+        motion_1 = MG()
+        button_counter = 1
         while True:
+            joint_vals = []
             for joint_parameter in joint_parameters:
+                val = pb.readUserDebugParameter(joint_parameter[0])
+                joint_vals.append(val)
                 robot.setAngles(
                     joint_parameter[1],
-                    pb.readUserDebugParameter(joint_parameter[0]), 1.0)
+                    val, 1.0)
 
             X_rot_val = pb.readUserDebugParameter(rotate_X_slider)
             Y_rot_val = pb.readUserDebugParameter(rotate_Y_slider)
             Z_rot_val = pb.readUserDebugParameter(rotate_Z_slider)
+
+            capture_current_pos = pb.readUserDebugParameter(capture_joint_values_button)
+
             pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.4], pb.getQuaternionFromEuler([X_rot_val, Y_rot_val, Z_rot_val]))
+            
+            if capture_current_pos >= button_counter:
+                motion_1.addKeyframe(1000, ChangeNaoJointOrder([math.degrees(j) for j in joint_vals]), description="test descr.")
+                button_counter += 1
             
             simulation_manager.stepSimulation(client)
 
@@ -51,3 +69,4 @@ if __name__ == "__main__":
         pass
     finally:
         simulation_manager.stopSimulation(client)
+        motion_1.generatePosFile("test-motion-2")
