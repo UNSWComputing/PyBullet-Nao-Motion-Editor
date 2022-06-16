@@ -1,6 +1,5 @@
 # Motion Generator Test
 
-from cgi import test
 from MotionGenerator import MotionGenerator as MG
 
 test_motion = MG()
