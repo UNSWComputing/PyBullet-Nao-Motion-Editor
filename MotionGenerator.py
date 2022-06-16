@@ -4,7 +4,7 @@
 class MotionGenerator:
     def __init__(self):
         self.keyframes = []
-        self.defaultStiffness = 1.0
+        self.defaultStiffness = 0.85
         self.header = "  HY    HP    LSP   LSR   LEY   LER   LWY   LHYP  LHR   LHP   LKP   LAP   LAR   RHR   RHP   RKP   RAP   RAR   RSP   RSR   REY   RER   RWY   LH    RH    DUR"
 
     def addKeyframe(self, duration, jointvals, stiffnessvals=[], description=""):
@@ -22,7 +22,8 @@ class MotionGenerator:
             for keyframe in self.keyframes:
                 posFile.write(f'{keyframe["description"]}\n')
                 
-                # If stiffness is not specified, set them to the default value of 1.0
+                # If stiffness is not specified, set them to the default value defined above.
+                # Or is it better to skip the stiffness values line when writing ?
                 if len(keyframe["stiffness_vals"]) == 0:
                     keyframe["stiffness_vals"] = [self.defaultStiffness] * 25
 
