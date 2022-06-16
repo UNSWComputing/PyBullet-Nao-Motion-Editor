@@ -16,9 +16,9 @@ class MotionGenerator:
                         }
         self.keyframes.append(new_keyframe)
 
-    def generatePosFile(self, filename):
-        print_width = 7     # column spacing
-        print_precision = 1 # value precision
+    def generatePosFile(self, filename, width=7, precision=1):
+        print_width = width         # column spacing
+        print_precision = precision # value precision
         
         with open(filename+".pos", 'w') as posFile:
             posFile.write('  ')
