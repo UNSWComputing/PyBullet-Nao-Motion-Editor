@@ -68,5 +68,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     finally:
-        simulation_manager.stopSimulation(client)
         motion_1.generatePosFile("test-motion-2")
+        simulation_manager.stopSimulation(client)
