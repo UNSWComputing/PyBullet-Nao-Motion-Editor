@@ -24,7 +24,7 @@ To use the motion editor, run `python move-joints.py` and wait for the Nao model
 
 You can now adjust the sliders to move the Nao model's joints.
 
-To capture a keyframe, click the capture keyframe button. This records the joint values internally.
+To capture a keyframe, click the capture keyframe button(scroll down to the bottom of all the sliders). This records the joint values internally.
 
 To generate a `.pos` file, close the pybullet window or hit `ESC`. A file with the name `test-motion-2.pos` should get generated.
 
