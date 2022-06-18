@@ -15,6 +15,7 @@ if __name__ == "__main__":
 
     client = simulation_manager.launchSimulation(gui=True, auto_step=False)
     
+    pb.resetDebugVisualizerCamera( cameraDistance=0.5, cameraYaw=65, cameraPitch=-25, cameraTargetPosition=[0,0,0.35])    
     robot = simulation_manager.spawnNao(client, spawn_ground_plane=False)
     
     pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
