@@ -7,6 +7,9 @@ class MotionGenerator:
         self.defaultStiffness = 0.85
         self.header = ["HY", "HP", "LSP", "LSR", "LEY", "LER", "LWY", "LHYP", "LHR", "LHP", "LKP", "LAP", "LAR", "RHR", "RHP", "RKP", "RAP","RAR","RSP","RSR","REY","RER","RWY","LH","RH", "DUR"]
 
+    def setDefaultStiffness(self, stiffnessVal):
+        self.defaultStiffness = stiffnessVal
+
     def addKeyframe(self, duration, jointvals, stiffnessvals=[], description=""):
         new_keyframe = {
                         "description":   description, 
