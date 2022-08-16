@@ -1,5 +1,6 @@
 import sys
 import time
+from datetime import datetime
 import math
 import pybullet as pb
 from qibullet import SimulationManager
@@ -62,11 +63,18 @@ if __name__ == "__main__":
             if capture_current_pos >= button_counter:
                 motion_1.addKeyframe(1000, ChangeNaoJointOrder([math.degrees(j) for j in joint_vals]), description="test descr.")
                 button_counter += 1
+                # TODO
+                # - Find an intuitive way to add the duration and description fields to the GUI.
+                # - Might be related to creating a better GUI in general to enable functionality like:
+                #   - seeing the keyframes
+                #   - deleting, reordering and other manipulations
+                #   - visualizing the previous pose as a ghost (nice to have)
             
             simulation_manager.stepSimulation(client)
 
     except KeyboardInterrupt:
         pass
     finally:
+        timestamp = datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
         simulation_manager.stopSimulation(client)
-        motion_1.generatePosFile("test-motion-2")
+        motion_1.generatePosFile("motion_"+timestamp)
