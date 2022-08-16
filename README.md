@@ -26,7 +26,7 @@ You can now adjust the sliders to move the Nao model's joints.
 
 To capture a keyframe, click the capture keyframe button(scroll down to the bottom of all the sliders). This records the joint values internally.
 
-To generate a `.pos` file, close the pybullet window or hit `ESC`. A file with the name `test-motion-2.pos` should get generated.
+To generate a `.pos` file, close the pybullet window or hit `ESC`. A file with the name `motion_<date+time>.pos` should get generated.
 
 ## Notes
 - This is still a work in progress and hasn't been tested sufficiently. So the current interface/workflow might be a bit janky.
