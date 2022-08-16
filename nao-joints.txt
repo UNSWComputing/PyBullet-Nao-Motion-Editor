@@ -1,5 +1,5 @@
-ri  |  i |  Joint Name     | Lower limit  | Upper limit  | Curr Pos
-----|----+-----------------+--------------+--------------+----------
+ri  |  i |  Joint Name     | Lower limit  | Upper limit  | Curr Pos (might not be accurate)
+----+----+-----------------+--------------+--------------+----------
  0  |  0 |  HeadYaw        |     -2.08567 |      2.08567 |    0.0
  1  |  1 |  HeadPitch      |    -0.671952 |     0.514872 |    0.0
  2  |  2 |  LHipYawPitch   |     -1.14529 |     0.740718 |    0.0
