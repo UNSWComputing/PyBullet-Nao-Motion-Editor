@@ -1,7 +1,7 @@
 # Pos file Generator
 # import sys
 
-class MotionGenerator:
+class MotionHandle:
     def __init__(self):
         self.keyframes = []
         self.defaultStiffness = 0.85
@@ -18,6 +18,42 @@ class MotionGenerator:
                         "duration":      duration
                         }
         self.keyframes.append(new_keyframe)
+
+    def readPosFile(self, filename):
+        with open(filename, 'r', encoding='UTF-8') as posFile:
+            stiffness_vals = []
+            joint_vals = []
+            duration = -1
+            description = ""
+            
+            for line in posFile:    
+                line = line.rstrip().split()
+                if line:
+                    if line[0] == '$': # Stiffness val
+                        stiffness_vals = line[1:]
+                    elif line[0] == '!': # Joint val
+                        joint_vals = line[1:-1]
+                        duration = line[-1]
+                    elif line[0] != "HY": # Description
+                        description += (" | " if len(description) else "") + " ".join(line)
+
+                    if stiffness_vals and joint_vals and duration:
+                        # To be removed after debugging
+                        # print(description)
+                        # print(stiffness_vals)
+                        # print(joint_vals)
+                        # print(duration)
+                        # print("="*20)
+
+                        self.addKeyframe(self, duration, joint_vals, stiffness_vals, description)
+
+                        # Reset vals
+                        stiffness_vals = []
+                        joint_vals = []
+                        duration = -1
+                        description = ""
+                
+    
 
     def generatePosFile(self, filename, width=7, precision=1):
         print_width = width         # column spacing

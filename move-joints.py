@@ -6,7 +6,7 @@ import pybullet as pb
 from qibullet import SimulationManager
 from qibullet import NaoVirtual
 
-from MotionGenerator import MotionGenerator as MG
+from MotionHandle import MotionHandle as MH
 from UtilityFuncs import ChangeNaoJointOrder
 
 PI = 3.1415926535
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     capture_joint_values_button = pb.addUserDebugParameter("Capture Keyframe", 1, 0, 0)
 
     try:
-        motion_1 = MG()
+        motion_1 = MH()
         button_counter = 1
         while True:
             joint_vals = []
