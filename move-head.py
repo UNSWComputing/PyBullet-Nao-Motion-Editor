@@ -16,6 +16,8 @@ if __name__ == "__main__":
     
     robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
 
+    pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
+
     time.sleep(1.0)
     joint_parameters = list()
 
@@ -25,23 +27,30 @@ if __name__ == "__main__":
 
     try:
         yaw_angle = 0.0
-        upperlimit = robot.joint_dict.get("HeadYaw").getUpperLimit()
-        lowerlimit = robot.joint_dict.get("HeadYaw").getLowerLimit()
+        Hyaw_upperlimit = robot.joint_dict.get("HeadYaw").getUpperLimit()
+        Hyaw_lowerlimit = robot.joint_dict.get("HeadYaw").getLowerLimit()
+        Hpitch_upperlimit = robot.joint_dict.get("HeadPitch").getUpperLimit()
+        Hpitch_lowerlimit = robot.joint_dict.get("HeadPitch").getLowerLimit()
         direction = 1 # 1, -1 -> L, R
         step = 0.2
         delay = 0.5
         prevTime = 0
         firstTime = True
-        speed = 0.1
+        speed = 0.9
+        
+
         while True:
             if firstTime:
                 firstTime = False
-                robot.setAngles("HeadYaw", lowerlimit, speed)
-            curr_angle = robot.getAnglesPosition("HeadYaw")
-            if curr_angle >= upperlimit-0.05:
-                robot.setAngles("HeadYaw", lowerlimit, speed)
-            elif curr_angle <= lowerlimit+0.05:
-                robot.setAngles("HeadYaw", upperlimit, speed)
+                robot.setAngles("HeadPitch", Hpitch_lowerlimit, speed)
+                # robot.setAngles("HeadPitch", Hpitch_lowerlimit, speed)
+            
+            curr_angle = robot.getAnglesPosition("HeadPitch")    
+            
+            if curr_angle >= Hpitch_upperlimit-0.05:
+                robot.setAngles("HeadPitch", Hpitch_lowerlimit, speed)
+            elif curr_angle <= Hpitch_lowerlimit+0.05:
+                robot.setAngles("HeadPitch", Hpitch_upperlimit, speed)
             simulation_manager.stepSimulation(client)
 
     except KeyboardInterrupt:
