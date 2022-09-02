@@ -10,7 +10,7 @@ class MotionHandle:
     def setDefaultStiffness(self, stiffnessVal):
         self.defaultStiffness = stiffnessVal
 
-    def addKeyframe(self, duration, jointvals, stiffnessvals=[], description=""):
+    def addKeyFrame(self, duration, jointvals, stiffnessvals=[], description=""):
         new_keyframe = {
                         "description":   description, 
                         "joint_vals":     jointvals, 
@@ -30,10 +30,10 @@ class MotionHandle:
                 line = line.rstrip().split()
                 if line:
                     if line[0] == '$': # Stiffness val
-                        stiffness_vals = line[1:]
+                        stiffness_vals = [float(val) for val in line[1:]]
                     elif line[0] == '!': # Joint val
-                        joint_vals = line[1:-1]
-                        duration = line[-1]
+                        joint_vals = [float(val) for val in line[1:-1]]
+                        duration = float(line[-1])
                     elif line[0] != "HY": # Description
                         description += (" | " if len(description) else "") + " ".join(line)
 
@@ -45,7 +45,7 @@ class MotionHandle:
                         # print(duration)
                         # print("="*20)
 
-                        self.addKeyframe(self, duration, joint_vals, stiffness_vals, description)
+                        self.addKeyFrame(duration, joint_vals, stiffness_vals, description)
 
                         # Reset vals
                         stiffness_vals = []
