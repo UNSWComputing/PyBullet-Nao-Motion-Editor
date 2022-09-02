@@ -19,17 +19,20 @@ if __name__ == "__main__":
     
     robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
 
-    # pb.changeDynamics(robot.robot_model, -1, mass=0.01) # Sets the mass of the base link(-1) to 0.
+    pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
+    
+    pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.5], pb.getQuaternionFromEuler([0.0, 0.0, 0.0]))
 
     time.sleep(1.0)
     joint_parameters = list()
 
     motion_handle = MH()
-    motion_handle.readPosFile("sit.pos")
+    # motion_handle.readPosFile("sit.pos")
+    motion_handle.readPosFile("getupFront.pos")
     # motion_handle.readPosFile("ukemiBack.pos")
     # motion_handle.readPosFile("sample_motion-1.pos")
     motion_player = MP(robot, motion_handle)
-    MP.loop = True
+    # MP.loop = True
 
     # robot.goToPosture()
     # for name, joint in robot.joint_dict.items():

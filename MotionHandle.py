@@ -19,6 +19,7 @@ class MotionHandle:
                         }
         self.keyframes.append(new_keyframe)
 
+    
     def readPosFile(self, filename):
         with open(filename, 'r', encoding='UTF-8') as posFile:
             stiffness_vals = []
@@ -37,13 +38,16 @@ class MotionHandle:
                     elif line[0] != "HY": # Description
                         description += (" | " if len(description) else "") + " ".join(line)
 
-                    if stiffness_vals and joint_vals and duration:
+                    # Needs at least joint vals and duration to be defined for a keyframe
+                    if joint_vals and duration:
                         # To be removed after debugging
                         # print(description)
                         # print(stiffness_vals)
                         # print(joint_vals)
                         # print(duration)
                         # print("="*20)
+                        if not stiffness_vals:
+                            stiffness_vals = [self.defaultStiffness]*len(joint_vals)
 
                         self.addKeyFrame(duration, joint_vals, stiffness_vals, description)
 

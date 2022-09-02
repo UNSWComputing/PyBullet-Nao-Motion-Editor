@@ -35,27 +35,35 @@ class MotionPlayer:
     def updateTargetPose(self):
         self.target_pose = self.motion_handle.keyframes[self.keyframe_index]["joint_vals"]
         self.target_pose_stiffness = self.motion_handle.keyframes[self.keyframe_index]["stiffness_vals"]
-        self.target_duration = self.motion_handle.keyframes[self.keyframe_index]["duration"]
+        # self.target_duration = self.motion_handle.keyframes[self.keyframe_index]["duration"]
+        self.target_duration = 2000
 
     def setJointAngles(self):
         print("||[ Setting joint angles ]||... ", self.keyframe_index)
         # print("joint names: ", self.joint_names)
         # print("target pose: ", [math.radians(val) for val in self.target_pose])
-        self.robot.setAngles(ChangeNaoJointOrder(self.joint_names, 1), [math.radians(val) for val in self.target_pose], [(val*1.0) for val in self.target_pose_stiffness])
+        self.robot.setAngles(ChangeNaoJointOrder(self.joint_names, 1), [math.radians(val) for val in self.target_pose], [(val*0.1) for val in self.target_pose_stiffness])
         self.start_time = time.time()
+
+        # Not sure how to approach setting the joint speed.
+        # Does the percentage speed used by qibullet correspond to stiffness ? or is that 
+        # for TorqueControl MODE only ?
+        # Or maybe interpolation needs to be done between the keyframes ?
+
     
     def playMotion(self):
         self.updateCurrPose()
+        # print("len: ", len(self.motion_handle.keyframes))
         # print("curr_pose: ", self.curr_pose)
         if not self.Deactivate:
             self.updateTargetPose()
-            error_threshold = 0.2
+            error_threshold = 0.3
             
             joint_errors = JointErrors(ChangeNaoJointOrder(self.curr_pose, 1), [math.radians(val) for val in self.target_pose])
             
-            # if self.debug_counter % 200 == 0:
+            if self.debug_counter % 200 == 0:
                 # print("joint_errors: ", joint_errors)
-                # print("joint errors: ", max(joint_errors))
+                print("joint errors: ", max(joint_errors))
             self.debug_counter += 1
             
             if max(joint_errors) >= error_threshold:
