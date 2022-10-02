@@ -1,5 +1,5 @@
-# PyBullet-Nao-Motion-Editor
-A motion editor for the Nao robot, primarily for RoboCup.
+# PyBullet Nao Playground + Motion Editor
+A simulation environment for testing Nao motions/behaviors/vision(possibly?).
 
 ## Setup
 1. Clone the repository to a convenient location.
@@ -17,14 +17,14 @@ A motion editor for the Nao robot, primarily for RoboCup.
 
    `pip install -r requirements.txt`
 
-## Usage
+## Running the POS file generator
 Before you use the motion editor, run `python test-script.py` to ensure everything works. You may need to agree to Softbank's Licence agreement in the terminal the first time you run it.
 
 To use the motion editor, run `python move-joints.py` and wait for the Nao model and sliders to load in the GUI.
 
 You can now adjust the sliders to move the Nao model's joints.
 
-To capture a keyframe, click the capture keyframe button(scroll down to the bottom of all the sliders). This records the joint values internally.
+To capture a keyframe, click the capture keyframe button(scroll down to the bottom of all the sliders). This records the joint values internally. _Note: There is not yet a way to specify the duration or the stiffness of each joint._
 
 To generate a `.pos` file, close the pybullet window or hit `ESC`. A file with the name `motion_<date+time>.pos` should get generated.
 
