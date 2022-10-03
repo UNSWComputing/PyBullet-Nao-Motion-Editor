@@ -36,13 +36,13 @@ class MotionPlayer:
         self.target_pose = self.motion_handle.keyframes[self.keyframe_index]["joint_vals"]
         self.target_pose_stiffness = self.motion_handle.keyframes[self.keyframe_index]["stiffness_vals"]
         # self.target_duration = self.motion_handle.keyframes[self.keyframe_index]["duration"]
-        self.target_duration = 2000
+        self.target_duration = 500
 
     def setJointAngles(self):
         print("||[ Setting joint angles ]||... ", self.keyframe_index)
         # print("joint names: ", self.joint_names)
         # print("target pose: ", [math.radians(val) for val in self.target_pose])
-        self.robot.setAngles(ChangeNaoJointOrder(self.joint_names, 1), [math.radians(val) for val in self.target_pose], [(val*0.1) for val in self.target_pose_stiffness])
+        self.robot.setAngles(ChangeNaoJointOrder(self.joint_names, 1), [math.radians(val) for val in self.target_pose], [(0.8) for val in self.target_pose_stiffness])
         self.start_time = time.time()
 
         # Not sure how to approach setting the joint speed.
@@ -57,7 +57,10 @@ class MotionPlayer:
         # print("curr_pose: ", self.curr_pose)
         if not self.Deactivate:
             self.updateTargetPose()
-            error_threshold = 0.3
+            error_threshold = 0.5
+            # Maybe try measuring the fluctuation of the joint error to decide when to switch to 
+            # the next motion ? Say if the error remains the same for 500 iterations, consider transitioning ?
+            # Not sure what's the best way to do this.
             
             joint_errors = JointErrors(ChangeNaoJointOrder(self.curr_pose, 1), [math.radians(val) for val in self.target_pose])
             
