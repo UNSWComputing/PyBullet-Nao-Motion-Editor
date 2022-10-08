@@ -57,3 +57,7 @@ if __name__ == "__main__":
         pass
     finally:
         simulation_manager.stopSimulation(client)
+
+# GLSL version 1.5 not supported. (Happens sometimes on VirtualBox VM)
+# See https://github.com/bulletphysics/bullet3/issues/1681
+# Usually fixed by disabling 3D acceleration in VM settings.
