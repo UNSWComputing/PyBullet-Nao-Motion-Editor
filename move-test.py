@@ -86,120 +86,81 @@ if __name__ == "__main__":
 
     # motion_handle1.readPosFile("pos/test-r-arm.pos")
     # motion_handle1.readPosFile("pos/stand.pos")
-    # motion_handle2.readPosFile("pos/sit.pos")
+    # motion_handle1.readPosFile("pos/sit.pos")
     # motion_handle1.readPosFile("pos/getupFront.pos")
-    motion_handle1.readPosFile("pos/getupBack.pos")
-    # motion_handle.readPosFile("pos/ukemiBack.pos")
-    # motion_handle.readPosFile("pos/sample_motion-1.pos")
+    # motion_handle1.readPosFile("pos/getupBack.pos")
+    # motion_handle1.readPosFile("pos/ukemiBack.pos")
+    # motion_handle1.readPosFile("pos/sample_motion-1.pos")
+    motion_handle1.readPosFile("pos/pump-arms-up.pos")
     motion_player = MP(robot, motion_handle1)
-    # MP.loop = True
+    motion_player.loop = True
+    
 
-    sit_button = pb.addUserDebugParameter("Sit", 1, 0, 0)
-    stand_button = pb.addUserDebugParameter("Stand", 1, 0, 0)
+    # sit_button = pb.addUserDebugParameter("Sit", 1, 0, 0)
+    # stand_button = pb.addUserDebugParameter("Stand", 1, 0, 0)
     # robot.goToPosture()
     # for name, joint in robot.joint_dict.items():
     #     print(f"{name:14} | {joint.getLowerLimit():12} | {joint.getUpperLimit():12} | {robot.getAnglesPosition(name):6}")
 
     try:
-        # yaw_angle = 0.0
         # Hyaw_upperlimit = robot.joint_dict.get("HeadYaw").getUpperLimit()
         # Hyaw_lowerlimit = robot.joint_dict.get("HeadYaw").getLowerLimit()
         # Hpitch_upperlimit = robot.joint_dict.get("HeadPitch").getUpperLimit()
         # Hpitch_lowerlimit = robot.joint_dict.get("HeadPitch").getLowerLimit()
-        # direction = 1 # 1, -1 -> L, R
-        # step = 0.2
-        # delay = 0.5
-        # prevTime = 0
-        # firstTime = True
-        # speed = 0.9
-        # print(robot.joint_dict.items())
-        x = 0.0
-        y = 0.0
-        v_x = 0.001
-        v_y = 0.001
-        key_update = False
+        # x = 0.0
+        # y = 0.0
+        # v_x = 0.001
+        # v_y = 0.001
+        # key_update = False
+        
         dt = round(1/83.333, 3)
-        print(f"dt: {dt}")
+        # print(f"dt: {dt}")
 
-        curr_sit_button_state = 0
-        curr_stand_button_state = 0
-        curr_pose = "Default"
+        # curr_sit_button_state = 0
+        # curr_stand_button_state = 0
+        # curr_pose = "Default"
         motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
         # print(len(motion_player.motion_handle.keyframes))
-
-        for i in range(len(motion_player.motion_handle.keyframes)):
-            motion_player.keyframe_index = i
-            # motion_player.updateCurrPose()
-            motion_player.updateTargetPose()
-            # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
-            intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
-            # print("intermediates: ",intermediates)
-            print("im #", i)
-            for im in intermediates:
+        
+        # Looping seems to stop after a couple of reps
+        while True:
+            for i in range(len(motion_player.motion_handle.keyframes)):
+                motion_player.keyframe_index = i
                 # motion_player.updateCurrPose()
-                motion_player.target_pose = im
-                print(im)
-                motion_player.setJointAngles(1.0)
+                motion_player.updateTargetPose()
+                # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
+                intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
+                # print("intermediates: ",intermediates)
+                print("frame #", i)
+                for im in intermediates:
+                    # motion_player.updateCurrPose()
+                    # print("...looping...")
+                    motion_player.target_pose = im
+                    # print(im)
+                    motion_player.setJointAngles(1.0)
+                    # print("p1")
 
-                currTime = time.time() - motion_player.start_time
-                print("currtime: ", currTime)
-                if currTime < dt:
-                    # print(f"Sleeping for {dt - currTime} sec")
-                    time.sleep(dt*1.0 - currTime)
-                
-                # print("{:.10f}".format(im[0]))
-            #print("==[Done]==")
-            motion_player.curr_pose = motion_player.target_pose
+                    currTime = time.time() - motion_player.start_time
+                    # print("currtime: ", currTime)
+                    if currTime < dt:
+                        # print(f"Sleeping for {dt - currTime} sec")
+                        # print("p2")
+                        time.sleep(dt*1.0 - currTime)
+                        # print("p3")
+                    
+                    # print("{:.10f}".format(im[0]))
+                #print("==[Done]==")
+                print("p4")
+                motion_player.curr_pose = motion_player.target_pose
+                print("p5")
 
-        # while True:
-        #     sit_button_state = pb.readUserDebugParameter(sit_button)
-        #     stand_button_state = pb.readUserDebugParameter(stand_button)
-        #     # print(f"sit:{sit_button_state}, stand:{stand_button_state}")
-
-        #     if sit_button_state > curr_sit_button_state: 
-        #         curr_sit_button_state = sit_button_state
-        #         motion_player.motion_handle = motion_handle2
-        #         if curr_pose != "SIT":
-        #             motion_player.reset()
-        #             curr_pose = "SIT"
-        #         motion_player.playMotion(0.4)
-        #     elif stand_button_state > curr_stand_button_state:
-        #         curr_stand_button_state = stand_button_state
-        #         motion_player.motion_handle = motion_handle1
-        #         if curr_pose != "STAND":
-        #             motion_player.reset()
-        #             curr_pose = "STAND"
-        #         motion_player.playMotion(0.1)
-        #     else:
-        #         pass
-            # if firstTime:
-            #     firstTime = False
-            #     robot.setAngles("HeadPitch", Hpitch_lowerlimit, speed)
-            #     # robot.setAngles("HeadPitch", Hpitch_lowerlimit, speed)
-            # key = readchar.readkey() # Can't use this as is since it freezes the simulation
-            # if key == "w":
-            #     x += v_x
-            #     key_update = True
-            # if key == "a":
-            #     y -= v_y
-            #     key_update = True
-            # if key == "s":
-            #     x -= v_x
-            #     key_update = True
-            # if key == "d":
-            #     y += v_y
-            #     key_update = True
+            print("p5.1")
+            # print(motion_player.loop, not motion_player.loop)
+            if not motion_player.loop:
+                print("p6")
+                break
             
-            # if key_update:
-            #     pb.resetBasePositionAndOrientation(robot.robot_model, [x, y, 0.53], pb.getQuaternionFromEuler([0.0, 0.0, 0.0]))
-            #     key_update = False
-            # curr_angle = robot.getAnglesPosition("HeadPitch")    
-            # print("[looping..]")
-            # if curr_angle >= Hpitch_upperlimit-0.05:
-            #     robot.setAngles("HeadPitch", Hpitch_lowerlimit, speed)
-            # elif curr_angle <= Hpitch_lowerlimit+0.05:
-            #     robot.setAngles("HeadPitch", Hpitch_upperlimit, speed)
-            # simulation_manager.stepSimulation(client)
+            print("p7")
 
     except KeyboardInterrupt:
         pass

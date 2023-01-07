@@ -69,7 +69,7 @@ class MotionPlayer:
         #print(f"target: {len(self.target_pose)}, curr: {len(self.curr_pose)}")
         #print(f"target: {(self.target_pose)}, curr: {(self.curr_pose)}")
         for i in range(len(self.target_pose)):
-            print("==[looping]==")
+            # print("==[looping]==")
             j_vals = Lerp(self.curr_pose[i], math.radians(self.target_pose[i]), time_steps)
             
             if not j_vals:
@@ -78,7 +78,7 @@ class MotionPlayer:
             intermediate_joint_vals.append(j_vals)
             #print("End of loop")
         #print("returning")
-        print("inside func: ", intermediate_joint_vals)
+        # print("inside func: ", intermediate_joint_vals)
         return list(map(list, zip(*intermediate_joint_vals)))
     
     # Not used currently
