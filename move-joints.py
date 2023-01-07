@@ -16,8 +16,9 @@ if __name__ == "__main__":
 
     client = simulation_manager.launchSimulation(gui=True, auto_step=False)
     
+    simulation_manager.setGravity(client, [0.0, 0.0, -9.81])
     pb.resetDebugVisualizerCamera( cameraDistance=0.5, cameraYaw=65, cameraPitch=-25, cameraTargetPosition=[0,0,0.35])    
-    robot = simulation_manager.spawnNao(client, spawn_ground_plane=False)
+    robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
     
     pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
     # print(pb.getDynamicsInfo(robot.robot_model, -1))
@@ -29,15 +30,15 @@ if __name__ == "__main__":
         if "Finger" not in name and "Thumb" not in name and "RHipYawPitch" not in name:
             joint_parameters.append((
                 pb.addUserDebugParameter(
-                    name,
+                    "  "+name,
                     joint.getLowerLimit(),
                     joint.getUpperLimit(),
                     robot.getAnglesPosition(name)),
                 name))
 
-    rotate_X_slider = pb.addUserDebugParameter("Rotate X", -PI, PI, 0.0)
-    rotate_Y_slider = pb.addUserDebugParameter("Rotate Y", -PI, PI, 0.0)
-    rotate_Z_slider = pb.addUserDebugParameter("Rotate Z", -PI, PI, 0.0)
+    rotate_X_slider = pb.addUserDebugParameter("  Rotate X", -PI, PI, 0.0)
+    rotate_Y_slider = pb.addUserDebugParameter("  Rotate Y", -PI, PI, 0.0)
+    rotate_Z_slider = pb.addUserDebugParameter("  Rotate Z", -PI, PI, 0.0)
 
     capture_joint_values_button = pb.addUserDebugParameter("Capture Keyframe", 1, 0, 0)
 
@@ -59,10 +60,10 @@ if __name__ == "__main__":
 
             capture_current_pos = pb.readUserDebugParameter(capture_joint_values_button)
 
-            pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.4], pb.getQuaternionFromEuler([X_rot_val, Y_rot_val, Z_rot_val]))
+            # pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.4], pb.getQuaternionFromEuler([X_rot_val, Y_rot_val, Z_rot_val]))
             
             if capture_current_pos >= button_counter:
-                motion_1.addKeyframe(1000, ChangeNaoJointOrder([math.degrees(j) for j in joint_vals]), description="test descr.")
+                motion_1.addKeyFrame(1000, ChangeNaoJointOrder([math.degrees(j) for j in joint_vals]), description="test descr.")
                 button_counter += 1
                 # TODO
                 # - Find an intuitive way to add the duration and description fields to the GUI.
