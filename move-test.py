@@ -14,6 +14,7 @@ from MotionHandle import MotionHandle as MH
 from MotionPlayer import MotionPlayer as MP
 
 PI = 3.1415926535
+DEFAULT_POSE = [0, -10, 90, 10, 0, 0, 0, 0, 0, -28, 50, -25, 0, 0, -28, 50, -25, 0, 90, -10, 0, 0, 0, 0, 0]
 
 if __name__ == "__main__":
     simulation_manager = SimulationManager()
@@ -80,14 +81,14 @@ if __name__ == "__main__":
 
     motion_handle1 = MH()
     motion_handle2 = MH()
-    motion_handle1.readPosFile("pos/test-r-arm.pos")
+    # motion_handle1.readPosFile("pos/test-r-arm.pos")
     # motion_handle1.readPosFile("pos/stand.pos")
     motion_handle2.readPosFile("pos/sit.pos")
-    # motion_handle.readPosFile("pos/getupFront.pos")
+    # motion_handle1.readPosFile("pos/getupFront.pos")
     # motion_handle.readPosFile("pos/getupBack.pos")
     # motion_handle.readPosFile("pos/ukemiBack.pos")
     # motion_handle.readPosFile("pos/sample_motion-1.pos")
-    motion_player = MP(robot, motion_handle2)
+    motion_player = MP(robot, motion_handle1)
     # MP.loop = True
 
     sit_button = pb.addUserDebugParameter("Sit", 1, 0, 0)
@@ -114,32 +115,38 @@ if __name__ == "__main__":
         v_x = 0.001
         v_y = 0.001
         key_update = False
-        dt = 1/83.333
+        dt = round(1/83.333, 3)
+        print(f"dt: {dt}")
 
         curr_sit_button_state = 0
         curr_stand_button_state = 0
         curr_pose = "Default"
+        motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
+
 
         for i in range(len(motion_player.motion_handle.keyframes)):
             motion_player.keyframe_index = i
-            motion_player.updateCurrPose()
+            # motion_player.updateCurrPose()
             motion_player.updateTargetPose()
             # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
             intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
-            # print("im #", i)
+            print("intermediates: ",intermediates)
+            print("im #", i)
             for im in intermediates:
-                motion_player.updateCurrPose()
+                # motion_player.updateCurrPose()
                 motion_player.target_pose = im
-                # print(im)
+                print(im)
                 motion_player.setJointAngles(1.0)
 
                 currTime = time.time() - motion_player.start_time
                 print("currtime: ", currTime)
                 if currTime < dt:
-                    print(f"Sleeping for {dt - currTime} sec")
-                    time.sleep(0.12 - currTime)
-            #     print("{:.10f}".format(im))
+                    # print(f"Sleeping for {dt - currTime} sec")
+                    time.sleep(dt*2.0 - currTime)
+                
+                # print("{:.10f}".format(im[0]))
             #print("==[Done]==")
+            motion_player.curr_pose = motion_player.target_pose
 
         # while True:
         #     sit_button_state = pb.readUserDebugParameter(sit_button)

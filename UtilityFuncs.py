@@ -17,6 +17,7 @@ def Lerp(start_val, end_val, time_step):
         while curr_val+step > end_val:
             curr_val += step
             lerp_vals.append(curr_val)
+    
     return lerp_vals
 
 # Takes 2 lists of joint vals and returns their corresponding errors

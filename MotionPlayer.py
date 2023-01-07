@@ -51,7 +51,7 @@ class MotionPlayer:
         self.target_duration = 500
 
     def setJointAngles(self, perc_speed):
-        print("||[ Setting joint angles ]||... ", self.keyframe_index)
+        # print("||[ Setting joint angles ]||... ", self.keyframe_index)
         # print("joint names: ", self.joint_names)
         # print("target pose: ", [math.radians(val) for val in self.target_pose])
         self.start_time = time.time()
@@ -63,16 +63,22 @@ class MotionPlayer:
         # Or maybe interpolation needs to be done between the keyframes ?
 
     def generateIntermediateVals(self, dur, dt):
-        time_steps = (dur/1000)//dt # rounded down, i.e. robot waits for remaining time
+        time_steps = int((dur/1000)//dt) # rounded down, i.e. robot waits for remaining time
+        # print("timesteps: ",time_steps)
         intermediate_joint_vals = []
         #print(f"target: {len(self.target_pose)}, curr: {len(self.curr_pose)}")
         #print(f"target: {(self.target_pose)}, curr: {(self.curr_pose)}")
         for i in range(len(self.target_pose)):
-            #print("==[looping]==")
+            print("==[looping]==")
             j_vals = Lerp(self.curr_pose[i], math.radians(self.target_pose[i]), time_steps)
+            
+            if not j_vals:
+                j_vals = [math.radians(self.target_pose[i])]*time_steps
+            
             intermediate_joint_vals.append(j_vals)
             #print("End of loop")
         #print("returning")
+        print("inside func: ", intermediate_joint_vals)
         return list(map(list, zip(*intermediate_joint_vals)))
     
     def playMotion(self, effort):
