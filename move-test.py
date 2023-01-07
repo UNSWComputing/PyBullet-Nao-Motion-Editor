@@ -81,14 +81,17 @@ if __name__ == "__main__":
 
     motion_handle1 = MH()
     motion_handle2 = MH()
+
+    # Sit works but getups still don't work. Probably something to do with the masses ?
+
     # motion_handle1.readPosFile("pos/test-r-arm.pos")
     # motion_handle1.readPosFile("pos/stand.pos")
-    motion_handle2.readPosFile("pos/sit.pos")
+    # motion_handle2.readPosFile("pos/sit.pos")
     # motion_handle1.readPosFile("pos/getupFront.pos")
-    # motion_handle.readPosFile("pos/getupBack.pos")
+    motion_handle1.readPosFile("pos/getupBack.pos")
     # motion_handle.readPosFile("pos/ukemiBack.pos")
     # motion_handle.readPosFile("pos/sample_motion-1.pos")
-    motion_player = MP(robot, motion_handle2)
+    motion_player = MP(robot, motion_handle1)
     # MP.loop = True
 
     sit_button = pb.addUserDebugParameter("Sit", 1, 0, 0)
