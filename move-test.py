@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # motion_handle.readPosFile("pos/getupBack.pos")
     # motion_handle.readPosFile("pos/ukemiBack.pos")
     # motion_handle.readPosFile("pos/sample_motion-1.pos")
-    motion_player = MP(robot, motion_handle1)
+    motion_player = MP(robot, motion_handle2)
     # MP.loop = True
 
     sit_button = pb.addUserDebugParameter("Sit", 1, 0, 0)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         curr_stand_button_state = 0
         curr_pose = "Default"
         motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
-
+        # print(len(motion_player.motion_handle.keyframes))
 
         for i in range(len(motion_player.motion_handle.keyframes)):
             motion_player.keyframe_index = i
@@ -130,7 +130,7 @@ if __name__ == "__main__":
             motion_player.updateTargetPose()
             # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
             intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
-            print("intermediates: ",intermediates)
+            # print("intermediates: ",intermediates)
             print("im #", i)
             for im in intermediates:
                 # motion_player.updateCurrPose()
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 print("currtime: ", currTime)
                 if currTime < dt:
                     # print(f"Sleeping for {dt - currTime} sec")
-                    time.sleep(dt*2.0 - currTime)
+                    time.sleep(dt*1.0 - currTime)
                 
                 # print("{:.10f}".format(im[0]))
             #print("==[Done]==")

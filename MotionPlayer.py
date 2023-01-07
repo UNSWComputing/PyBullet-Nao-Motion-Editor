@@ -47,8 +47,8 @@ class MotionPlayer:
     def updateTargetPose(self):
         self.target_pose = self.motion_handle.keyframes[self.keyframe_index]["joint_vals"]
         self.target_pose_stiffness = self.motion_handle.keyframes[self.keyframe_index]["stiffness_vals"]
-        # self.target_duration = self.motion_handle.keyframes[self.keyframe_index]["duration"]
-        self.target_duration = 500
+        self.target_duration = self.motion_handle.keyframes[self.keyframe_index]["duration"]
+        # self.target_duration = 500
 
     def setJointAngles(self, perc_speed):
         # print("||[ Setting joint angles ]||... ", self.keyframe_index)
@@ -81,6 +81,7 @@ class MotionPlayer:
         print("inside func: ", intermediate_joint_vals)
         return list(map(list, zip(*intermediate_joint_vals)))
     
+    # Not used currently
     def playMotion(self, effort):
         self.updateCurrPose()
         # print("len: ", len(self.motion_handle.keyframes))
