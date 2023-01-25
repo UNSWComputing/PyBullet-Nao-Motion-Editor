@@ -40,7 +40,9 @@ if __name__ == "__main__":
     rotate_Y_slider = pb.addUserDebugParameter("  Rotate Y", -PI, PI, 0.0)
     rotate_Z_slider = pb.addUserDebugParameter("  Rotate Z", -PI, PI, 0.0)
 
-    capture_joint_values_button = pb.addUserDebugParameter("Capture Keyframe", 1, 0, 0)
+    duration_slider = pb.addUserDebugParameter("  Duration(ms)", 50, 5000, 1000)
+
+    capture_joint_values_button = pb.addUserDebugParameter("  Capture Keyframe", 1, 0, 0)
 
     try:
         motion_1 = MH()
@@ -57,13 +59,14 @@ if __name__ == "__main__":
             X_rot_val = pb.readUserDebugParameter(rotate_X_slider)
             Y_rot_val = pb.readUserDebugParameter(rotate_Y_slider)
             Z_rot_val = pb.readUserDebugParameter(rotate_Z_slider)
+            duration_val = pb.readUserDebugParameter(duration_slider)
 
             capture_current_pos = pb.readUserDebugParameter(capture_joint_values_button)
 
             # pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.4], pb.getQuaternionFromEuler([X_rot_val, Y_rot_val, Z_rot_val]))
             
             if capture_current_pos >= button_counter:
-                motion_1.addKeyFrame(1000, ChangeNaoJointOrder([math.degrees(j) for j in joint_vals]), description="test descr.")
+                motion_1.addKeyFrame(int(duration_val), ChangeNaoJointOrder([math.degrees(j) for j in joint_vals]), description="test descr.")
                 button_counter += 1
                 # TODO
                 # - Find an intuitive way to add the duration and description fields to the GUI.
