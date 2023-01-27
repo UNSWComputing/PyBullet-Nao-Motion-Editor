@@ -15,6 +15,7 @@ from MotionPlayer import MotionPlayer as MP
 
 PI = 3.1415926535
 DEFAULT_POSE = [0, -10, 90, 10, 0, 0, 0, 0, 0, -28, 50, -25, 0, 0, -28, 50, -25, 0, 90, -10, 0, 0, 0, 0, 0]
+USE_GRAVITY = True
 
 if __name__ == "__main__":
     simulation_manager = SimulationManager()
@@ -72,9 +73,13 @@ if __name__ == "__main__":
 
     robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
 
-    # pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
+    if USE_GRAVITY:
+        pb.changeDynamics(robot.robot_model, -1, mass=0.01) # Sets the mass of the base link(-1) to 0.
+        pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.38], pb.getQuaternionFromEuler([0.0, 0.0, 0.0]))
+    else:
+        pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
+        pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.58], pb.getQuaternionFromEuler([0.0, 0.0, 0.0]))
     
-    pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.38], pb.getQuaternionFromEuler([0.0, 0.0, 0.0]))
 
     time.sleep(1.0)
     joint_parameters = list()
@@ -82,16 +87,26 @@ if __name__ == "__main__":
     motion_handle1 = MH()
     motion_handle2 = MH()
 
-    # Sit works but getups still don't work. Probably something to do with the masses ?
+    # Sit and the fast front getup works.
+    # In general, motions do seem to get a bit stuck
+    # at times either due to contact with a solid such
+    # as the floor or the robot itself, or probably because
+    # waiting between keyframes should be done based on simulation 
+    # time instead of real time ?
+    # Or it could be something to do with the masses ? (less likely)
+    # 
 
     # motion_handle1.readPosFile("pos/test-r-arm.pos")
-    # motion_handle1.readPosFile("pos/stand.pos")
-    # motion_handle1.readPosFile("pos/sit.pos")
-    # motion_handle1.readPosFile("pos/getupFront.pos")
+    # motion_handle1.readPosFile("pos/stand.pos") # WORKS
+    # motion_handle1.readPosFile("pos/sit.pos") # WORKS
+    motion_handle1.readPosFile("pos/getupFront.pos")
+    # motion_handle1.readPosFile("pos/getupFrontFast.pos") # WORKS
+    # motion_handle1.readPosFile("pos/getupBackFastV6.pos")
     # motion_handle1.readPosFile("pos/getupBack.pos")
     # motion_handle1.readPosFile("pos/ukemiBack.pos")
     # motion_handle1.readPosFile("pos/sample_motion-1.pos")
-    motion_handle1.readPosFile("pos/pump-arms-up.pos")
+    # motion_handle1.readPosFile("pos/pump-arms-up.pos") # WORKS
+    # motion_handle1.readPosFile("pos/jump_1.pos")
     motion_player = MP(robot, motion_handle1)
     motion_player.loop = True
     
@@ -125,10 +140,13 @@ if __name__ == "__main__":
         # Looping seems to stop after a couple of reps
         while True:
             for i in range(len(motion_player.motion_handle.keyframes)):
+                # print("p0.1")
                 motion_player.keyframe_index = i
                 # motion_player.updateCurrPose()
+                # print("p0.2")
                 motion_player.updateTargetPose()
                 # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
+                # print("p0.3")
                 intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
                 # print("intermediates: ",intermediates)
                 print("frame #", i)
@@ -150,17 +168,17 @@ if __name__ == "__main__":
                     
                     # print("{:.10f}".format(im[0]))
                 #print("==[Done]==")
-                print("p4")
+                # print("p4")
                 motion_player.curr_pose = motion_player.target_pose
-                print("p5")
+                # print("p5")
 
-            print("p5.1")
+            # print("p5.1")
             # print(motion_player.loop, not motion_player.loop)
             if not motion_player.loop:
-                print("p6")
+                # print("p6")
                 break
             
-            print("p7")
+            # print("p7")
 
     except KeyboardInterrupt:
         pass
