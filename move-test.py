@@ -1,6 +1,11 @@
 # move head
 # PyBullet Keyboard Shortcuts https://github.com/Gabo-Tor/pybullet-keyboard-shortcuts
 
+# Notes:
+# - The force for the setAngles method in RobotVirtual was tweaked
+#   by adding a multiplier.
+# - The motion playing is still not very smooth. Needs fixing.
+
 from datetime import timedelta
 import sys, time
 import math
@@ -99,7 +104,8 @@ if __name__ == "__main__":
     # motion_handle1.readPosFile("pos/test-r-arm.pos")
     # motion_handle1.readPosFile("pos/stand.pos") # WORKS
     # motion_handle1.readPosFile("pos/sit.pos") # WORKS
-    motion_handle1.readPosFile("pos/getupFront.pos")
+    # motion_handle1.readPosFile("pos/getupFront.pos")
+    motion_handle1.readPosFile("pos/Forwards.pos")
     # motion_handle1.readPosFile("pos/getupFrontFast.pos") # WORKS
     # motion_handle1.readPosFile("pos/getupBackFastV6.pos")
     # motion_handle1.readPosFile("pos/getupBack.pos")
