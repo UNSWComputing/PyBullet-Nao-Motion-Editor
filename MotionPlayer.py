@@ -51,11 +51,17 @@ class MotionPlayer:
         # self.target_duration = 500
 
     def setJointAngles(self, perc_speed):
-        # print("||[ Setting joint angles ]||... ", self.keyframe_index)
-        # print("joint names: ", self.joint_names)
-        # print("target pose: ", [math.radians(val) for val in self.target_pose])
         self.start_time = time.time()
-        self.robot.setAngles(ChangeNaoJointOrder(self.joint_names, 1), [val for val in self.target_pose], [(perc_speed) for val in self.target_pose_stiffness])
+        runswift_joint_names = ChangeNaoJointOrder(self.joint_names, 1)
+        joint_vals = [val for val in self.target_pose]
+        joint_powers = [(perc_speed) for val in self.target_pose_stiffness]
+        
+        # Explicitly couple HipYawPitch joint
+        runswift_joint_names.append("RHipYawPitch")
+        joint_vals.append(joint_vals[7])
+        joint_powers.append(perc_speed)
+
+        self.robot.setAngles(runswift_joint_names, joint_vals, joint_powers)
 
         # Not sure how to approach setting the joint speed.
         # Does the percentage speed used by qibullet correspond to stiffness ? or is that 
@@ -64,28 +70,18 @@ class MotionPlayer:
 
     def generateIntermediateVals(self, dur, dt):
         time_steps = int((dur/1000)//dt) # rounded down, i.e. robot waits for remaining time
-        # print("timesteps: ",time_steps)
         intermediate_joint_vals = []
-        #print(f"target: {len(self.target_pose)}, curr: {len(self.curr_pose)}")
-        #print(f"target: {(self.target_pose)}, curr: {(self.curr_pose)}")
-        for i in range(len(self.target_pose)):
-            # print("==[looping]==")
+        for i in range(len(self.target_pose)):            
             j_vals = Lerp(self.curr_pose[i], math.radians(self.target_pose[i]), time_steps)
-            
             if not j_vals:
                 j_vals = [math.radians(self.target_pose[i])]*time_steps
             
             intermediate_joint_vals.append(j_vals)
-            #print("End of loop")
-        #print("returning")
-        # print("inside func: ", intermediate_joint_vals)
         return list(map(list, zip(*intermediate_joint_vals)))
     
     # Not used currently
     def playMotion(self, effort):
         self.updateCurrPose()
-        # print("len: ", len(self.motion_handle.keyframes))
-        # print("curr_pose: ", self.curr_pose)
 
         if not self.Deactivate:
             self.updateTargetPose()
@@ -95,15 +91,11 @@ class MotionPlayer:
             # Not sure what's the best way to do this.
             
             joint_errors = JointErrors(ChangeNaoJointOrder(self.curr_pose, 1), [math.radians(val) for val in self.target_pose])
-            # print(joint_errors)
             
-
             if self.debug_counter % 200 == 0:
-                # print("joint_errors: ", joint_errors)
                 print("joint errors: ", max(joint_errors))
             self.debug_counter += 1
             
-            # if max(joint_errors) >= error_threshold:
             if not self.isMoving and ((time.time() - self.start_time)*1000.0 >= self.target_duration):
                 self.setJointAngles(effort)
                 self.isMoving = True
