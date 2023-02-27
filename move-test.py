@@ -17,6 +17,7 @@ from qibullet import NaoVirtual
 # from UtilityFuncs import Lerp
 from MotionHandle import MotionHandle as MH
 from MotionPlayer import MotionPlayer as MP
+from SPLAssets import LoadSPLField, LoadSPLGoalPosts, SpawnSPLBall
 
 PI = 3.1415926535
 DEFAULT_POSE = [0, -10, 90, 10, 0, 0, 0, 0, 0, -28, 50, -25, 0, 0, -28, 50, -25, 0, 90, -10, 0, 0, 0, 0, 0]
@@ -36,45 +37,10 @@ if __name__ == "__main__":
     
     simulation_manager.setGravity(client, [0.0, 0.0, -9.81])
     
-    pb.loadURDF("models/spl-22-field.urdf", 
-                basePosition=[0,0,0],
-                baseOrientation=pb.getQuaternionFromEuler([PI/2,0,0]),
-                useFixedBase=1,
-                flags=pb.URDF_USE_MATERIAL_COLORS_FROM_MTL, 
-                physicsClientId=client)
-
-    # Currently, the goalpost uses a convex mesh, i.e. objects can't pass the goal line.
-    # Might need to break the goalpost into 2 or more convex parts and combine them in urdf.
-    pb.loadURDF("models/spl-goalpost.urdf", 
-                basePosition=[-4.5,0,0.05],
-                baseOrientation=pb.getQuaternionFromEuler([PI/2,0,0]),
-                useFixedBase=1,
-                flags=pb.URDF_USE_MATERIAL_COLORS_FROM_MTL,
-                #pb.GEOM_FORCE_CONCAVE_TRIMESH | 
-                #pb.GEOM_CONCAVE_INTERNAL_EDGE,
-                physicsClientId=client)
-
-    pb.loadURDF("models/spl-goalpost.urdf", 
-                basePosition=[4.5,0,0.05],
-                baseOrientation=pb.getQuaternionFromEuler([PI/2,0,PI]),
-                useFixedBase=1,
-                flags=pb.URDF_USE_MATERIAL_COLORS_FROM_MTL,
-                #pb.URDF_INITIALIZE_SAT_FEATURES |
-                #pb.GEOM_FORCE_CONCAVE_TRIMESH | 
-                #pb.GEOM_CONCAVE_INTERNAL_EDGE, 
-                physicsClientId=client)
-
-    # This is from pybullet
-    ball = pb.loadURDF("soccerball.urdf",[0,1,1], globalScaling=0.1)
-    pb.changeDynamics(ball,-1,linearDamping=0, angularDamping=0, rollingFriction=0.001, spinningFriction=0.001)
-    pb.changeVisualShape(ball,-1,rgbaColor=[0.8,0.8,0.8,1])
-
-    # This was made by me
-    # pb.loadURDF("models/spl-22-ball.urdf",
-    #             basePosition=[0.3,0,0.3],
-    #             baseOrientation=pb.getQuaternionFromEuler([0,0,0]),
-    #             flags=pb.URDF_USE_MATERIAL_COLORS_FROM_MTL, 
-    #             physicsClientId=client)
+    LoadSPLField(client)
+    LoadSPLGoalPosts(client)
+    SpawnSPLBall(client, position=[0, 1, 1])
+    
 
     robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
 
