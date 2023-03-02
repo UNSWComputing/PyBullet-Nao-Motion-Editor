@@ -13,7 +13,8 @@ import pybullet as pb
 import pybullet_data as pd
 #import readchar
 from qibullet import SimulationManager
-from qibullet import NaoVirtual
+from qibullet import NaoVirtual, Camera
+import cv2
 # from UtilityFuncs import Lerp
 from MotionHandle import MotionHandle as MH
 from MotionPlayer import MotionPlayer as MP
@@ -22,6 +23,7 @@ from SPLAssets import LoadSPLField, LoadSPLGoalPosts, SpawnSPLBall
 PI = 3.1415926535
 DEFAULT_POSE = [0, -10, 90, 10, 0, 0, 0, 0, 0, -28, 50, -25, 0, 0, -28, 50, -25, 0, 90, -10, 0, 0, 0, 0, 0]
 USE_GRAVITY = True
+USE_ROBOT_CAMERAS = False
 
 if __name__ == "__main__":
     simulation_manager = SimulationManager()
@@ -54,6 +56,18 @@ if __name__ == "__main__":
 
     time.sleep(1.0)
     joint_parameters = list()
+
+    if USE_ROBOT_CAMERAS:
+        # Set up cameras
+        handle_top = robot.subscribeCamera(
+            NaoVirtual.ID_CAMERA_TOP, 
+            resolution=Camera.K_QVGA,
+            fps=15)
+
+        handle_bottom = robot.subscribeCamera(
+            NaoVirtual.ID_CAMERA_BOTTOM, 
+            resolution=Camera.K_QVGA,
+            fps=15)
 
     motion_handle1 = MH()
     motion_handle2 = MH()
@@ -90,67 +104,44 @@ if __name__ == "__main__":
     #     print(f"{name:14} | {joint.getLowerLimit():12} | {joint.getUpperLimit():12} | {robot.getAnglesPosition(name):6}")
 
     try:
-        # Hyaw_upperlimit = robot.joint_dict.get("HeadYaw").getUpperLimit()
-        # Hyaw_lowerlimit = robot.joint_dict.get("HeadYaw").getLowerLimit()
-        # Hpitch_upperlimit = robot.joint_dict.get("HeadPitch").getUpperLimit()
-        # Hpitch_lowerlimit = robot.joint_dict.get("HeadPitch").getLowerLimit()
-        # x = 0.0
-        # y = 0.0
-        # v_x = 0.001
-        # v_y = 0.001
-        # key_update = False
-        
         dt = round(1/83.333, 3)
-        # print(f"dt: {dt}")
-
-        # curr_sit_button_state = 0
-        # curr_stand_button_state = 0
-        # curr_pose = "Default"
-        motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
-        # print(len(motion_player.motion_handle.keyframes))
         
-        # Looping seems to stop after a couple of reps
+        motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
+        
         while True:
             for i in range(len(motion_player.motion_handle.keyframes)):
-                # print("p0.1")
                 motion_player.keyframe_index = i
                 # motion_player.updateCurrPose()
-                # print("p0.2")
+                
                 motion_player.updateTargetPose()
                 # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
-                # print("p0.3")
+                
                 intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
                 # print("intermediates: ",intermediates)
+                
+                if USE_ROBOT_CAMERAS:
+                    img_top = robot.getCameraFrame(handle_top)
+                    img_bottom = robot.getCameraFrame(handle_bottom)
+                    cv2.imshow("top camera", img_top)
+                    cv2.imshow("bottom camera", img_bottom)
+                    cv2.waitKey(1)
+                
                 print("frame #", i)
                 for im in intermediates:
                     # motion_player.updateCurrPose()
-                    # print("...looping...")
+                    
                     motion_player.target_pose = im
-                    # print(im)
                     motion_player.setJointAngles(1.0)
-                    # print("p1")
 
                     currTime = time.time() - motion_player.start_time
-                    # print("currtime: ", currTime)
-                    if currTime < dt:
-                        # print(f"Sleeping for {dt - currTime} sec")
-                        # print("p2")
-                        time.sleep(dt*1.0 - currTime)
-                        # print("p3")
-                    
-                    # print("{:.10f}".format(im[0]))
-                #print("==[Done]==")
-                # print("p4")
-                motion_player.curr_pose = motion_player.target_pose
-                # print("p5")
 
-            # print("p5.1")
-            # print(motion_player.loop, not motion_player.loop)
+                    if currTime < dt:
+                        time.sleep(dt*1.0 - currTime)
+                    
+                motion_player.curr_pose = motion_player.target_pose
+
             if not motion_player.loop:
-                # print("p6")
                 break
-            
-            # print("p7")
 
     except KeyboardInterrupt:
         pass
