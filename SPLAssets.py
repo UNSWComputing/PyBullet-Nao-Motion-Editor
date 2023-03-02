@@ -35,8 +35,14 @@ def LoadSPLGoalPosts(client):
 def SpawnSPLBall(client, position=[0, 0, 1], source="pybullet"):
     if source == "pybullet":
         # This is from pybullet
+        # Might need to adjust the size and mass of the ball
         ball = pb.loadURDF("soccerball.urdf",[0,1,1], globalScaling=0.1)
-        pb.changeDynamics(ball,-1,linearDamping=0, angularDamping=0, rollingFriction=0.001, spinningFriction=0.001)
+        pb.changeDynamics(ball,-1, 
+                          mass=0.0005, 
+                          linearDamping=0, 
+                          angularDamping=0, 
+                          rollingFriction=0.001, 
+                          spinningFriction=0.001)
         pb.changeVisualShape(ball,-1,rgbaColor=[0.8,0.8,0.8,1])
     elif source == "custom":
         # This was made by me
