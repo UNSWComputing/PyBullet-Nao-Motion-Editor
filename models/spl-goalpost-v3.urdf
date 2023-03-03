@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<robot name="spl-goalpost-v3.urdf">
+  <link name="baseLink">
+    <!-- Back -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="spl-goalpost-back-v3.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+      <material name="spl-goalpost-back-v3">
+        <texture filename="spl-goalpost-back-v3.mtl"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	    <mesh filename="spl-goalpost-back-v3.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+    </collision>
+    <!-- Left -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="spl-goalpost-left-v3.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+      <material name="spl-goalpost-left-v3">
+        <texture filename="spl-goalpost-left-v3.mtl"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	    <mesh filename="spl-goalpost-left-v3.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+    </collision>
+    <!-- Right -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="spl-goalpost-right-v3.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+      <material name="spl-goalpost-right-v3">
+        <texture filename="spl-goalpost-right-v3.mtl"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	    <mesh filename="spl-goalpost-right-v3.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+    </collision>
+    <!-- Crossbar -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="spl-goalpost-crossbar-v2.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+      <material name="spl-goalpost-crossbar-v2">
+        <texture filename="spl-goalpost-crossbar-v2.mtl"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	    <mesh filename="spl-goalpost-crossbar-v2.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

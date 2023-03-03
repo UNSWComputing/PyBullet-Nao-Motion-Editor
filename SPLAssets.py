@@ -13,7 +13,7 @@ def LoadSPLField(client):
 def LoadSPLGoalPosts(client):    
     # Currently, the goalpost uses a convex mesh, i.e. objects can't pass the goal line.
     # Might need to break the goalpost into 2 or more convex parts and combine them in urdf.
-    pb.loadURDF("models/spl-goalpost.urdf", 
+    pb.loadURDF("models/spl-goalpost-v3.urdf", 
                 basePosition=[-4.5,0,0.05],
                 baseOrientation=pb.getQuaternionFromEuler([pi/2,0,0]),
                 useFixedBase=1,
@@ -22,7 +22,7 @@ def LoadSPLGoalPosts(client):
                 #pb.GEOM_CONCAVE_INTERNAL_EDGE,
                 physicsClientId=client)
 
-    pb.loadURDF("models/spl-goalpost.urdf", 
+    pb.loadURDF("models/spl-goalpost-v3.urdf", 
                 basePosition=[4.5,0,0.05],
                 baseOrientation=pb.getQuaternionFromEuler([pi/2,0,pi]),
                 useFixedBase=1,
