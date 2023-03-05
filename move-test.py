@@ -3,7 +3,7 @@
 
 # Notes:
 # - The force for the setAngles method in RobotVirtual was tweaked
-#   by adding a multiplier.
+#   by adding a multiplier(defualt should be 1.0, currently 8.0).
 # - The motion playing is still not very smooth. Needs fixing.
 
 from datetime import timedelta
@@ -35,7 +35,8 @@ if __name__ == "__main__":
     # Creates better meshes for goalposts. Uses Separating Axis Theorem(SAT) based convex
     # collision detection (instead of GJK and EPA)
     pb.setPhysicsEngineParameter(enableSAT=1)
-    pb.setRealTimeSimulation(1)
+    pb.setTimeStep(1/180) # The performance of motions depends a lot on this.
+    # pb.setRealTimeSimulation(1)
     
     simulation_manager.setGravity(client, [0.0, 0.0, -9.81])
     
@@ -96,15 +97,14 @@ if __name__ == "__main__":
     motion_player = MP(robot, motion_handle1)
     motion_player.loop = True
     
-
-    # sit_button = pb.addUserDebugParameter("Sit", 1, 0, 0)
-    # stand_button = pb.addUserDebugParameter("Stand", 1, 0, 0)
-    # robot.goToPosture()
     # for name, joint in robot.joint_dict.items():
     #     print(f"{name:14} | {joint.getLowerLimit():12} | {joint.getUpperLimit():12} | {robot.getAnglesPosition(name):6}")
 
     try:
-        dt = round(1/83.333, 3)
+        # The round() is kept in case dt is changed to some other value.
+        dt = round(1/240.0, 3) # Keep this at 1/240 since its the default timestep for pybullet
+        # dt = round(1/25.0, 3)
+        # print(f"dt: {dt}")
         
         motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
         
@@ -114,19 +114,8 @@ if __name__ == "__main__":
                 # motion_player.updateCurrPose()
                 
                 motion_player.updateTargetPose()
-                # print(f"curr: {motion_player.curr_pose[2]}, target: {math.radians(motion_player.target_pose[2])}")
-                
                 intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
-                # print("intermediates: ",intermediates)
                 
-                if USE_ROBOT_CAMERAS:
-                    img_top = robot.getCameraFrame(handle_top)
-                    img_bottom = robot.getCameraFrame(handle_bottom)
-                    cv2.imshow("top camera", img_top)
-                    cv2.imshow("bottom camera", img_bottom)
-                    cv2.waitKey(1)
-                
-                print("frame #", i)
                 for im in intermediates:
                     # motion_player.updateCurrPose()
                     
@@ -137,6 +126,15 @@ if __name__ == "__main__":
 
                     if currTime < dt:
                         time.sleep(dt*1.0 - currTime)
+
+                    if USE_ROBOT_CAMERAS:
+                        img_top = robot.getCameraFrame(handle_top)
+                        img_bottom = robot.getCameraFrame(handle_bottom)
+                        cv2.imshow("top camera", img_top)
+                        cv2.imshow("bottom camera", img_bottom)
+                        cv2.waitKey(1)
+
+                    simulation_manager.stepSimulation(client)
                     
                 motion_player.curr_pose = motion_player.target_pose
 
