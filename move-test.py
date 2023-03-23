@@ -35,8 +35,8 @@ if __name__ == "__main__":
     # Creates better meshes for goalposts. Uses Separating Axis Theorem(SAT) based convex
     # collision detection (instead of GJK and EPA)
     pb.setPhysicsEngineParameter(enableSAT=1)
-    pb.setTimeStep(1/180) # The performance of motions depends a lot on this.
-    # pb.setRealTimeSimulation(1)
+    # pb.setTimeStep(1/100) # The performance of motions depends a lot on this.
+    pb.setRealTimeSimulation(1)
     
     simulation_manager.setGravity(client, [0.0, 0.0, -9.81])
     
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     # motion_handle1.readPosFile("pos/sit.pos") # WORKS
     # motion_handle1.readPosFile("pos/getupFront.pos")
     motion_handle1.readPosFile("pos/Forwards.pos")
+    # motion_handle1.readPosFile("pos/Pump_left_arm.pos")
     # motion_handle1.readPosFile("pos/getupFrontFast.pos") # WORKS
     # motion_handle1.readPosFile("pos/getupBackFastV6.pos")
     # motion_handle1.readPosFile("pos/getupBack.pos")
@@ -95,51 +96,31 @@ if __name__ == "__main__":
     # motion_handle1.readPosFile("pos/pump-arms-up.pos") # WORKS
     # motion_handle1.readPosFile("pos/jump_1.pos")
     motion_player = MP(robot, motion_handle1)
-    motion_player.loop = True
+    motion_player.loop = False
     
     # for name, joint in robot.joint_dict.items():
     #     print(f"{name:14} | {joint.getLowerLimit():12} | {joint.getUpperLimit():12} | {robot.getAnglesPosition(name):6}")
 
     try:
         # The round() is kept in case dt is changed to some other value.
-        dt = round(1/240.0, 3) # Keep this at 1/240 since its the default timestep for pybullet
+        dt = round(1/30.0, 6) # Keep this at 1/30 -> works for without camera
         # dt = round(1/25.0, 3)
         # print(f"dt: {dt}")
         
         motion_player.curr_pose = [math.radians(v) for v in DEFAULT_POSE]
         
         while True:
-            for i in range(len(motion_player.motion_handle.keyframes)):
-                motion_player.keyframe_index = i
-                # motion_player.updateCurrPose()
-                
-                motion_player.updateTargetPose()
-                intermediates = motion_player.generateIntermediateVals(motion_player.target_duration, dt)
-                
-                for im in intermediates:
-                    # motion_player.updateCurrPose()
-                    
-                    motion_player.target_pose = im
-                    motion_player.setJointAngles(1.0)
+            # Get Camera Feed
+            if USE_ROBOT_CAMERAS:
+                img_top = robot.getCameraFrame(handle_top)
+                img_bottom = robot.getCameraFrame(handle_bottom)
+                cv2.imshow("bottom camera", img_bottom)
+                cv2.imshow("top camera", img_top)
+                cv2.waitKey(1)
 
-                    currTime = time.time() - motion_player.start_time
+            motion_player.stepMotion(dt)
 
-                    if currTime < dt:
-                        time.sleep(dt*1.0 - currTime)
-
-                    if USE_ROBOT_CAMERAS:
-                        img_top = robot.getCameraFrame(handle_top)
-                        img_bottom = robot.getCameraFrame(handle_bottom)
-                        cv2.imshow("top camera", img_top)
-                        cv2.imshow("bottom camera", img_bottom)
-                        cv2.waitKey(1)
-
-                    simulation_manager.stepSimulation(client)
-                    
-                motion_player.curr_pose = motion_player.target_pose
-
-            if not motion_player.loop:
-                break
+            # simulation_manager.stepSimulation(client)
 
     except KeyboardInterrupt:
         pass

@@ -5,6 +5,7 @@ import math
 from UtilityFuncs import JointErrors, ChangeNaoJointOrder, Lerp
 from Plotter import JointErrorBars
 import time
+import csv
 
 class MotionPlayer:
     def __init__(self, robot, motion_handle):
@@ -21,6 +22,8 @@ class MotionPlayer:
         self.Deactivate = False
         self.debug_counter = 0
         self.joint_names = []
+        self.intermediates = {}
+        self.intermediate_index = 0
         for name in self.robot.joint_dict.keys():
             if ("Finger" not in name) and \
                ("Thumb" not in name) and  \
@@ -69,16 +72,85 @@ class MotionPlayer:
         # Or maybe interpolation needs to be done between the keyframes ?
 
     def generateIntermediateVals(self, dur, dt):
+        # Why are we converting dur to seconds here ?
+        # Because dt is in seconds.
         time_steps = int((dur/1000)//dt) # rounded down, i.e. robot waits for remaining time
-        intermediate_joint_vals = []
+        if time_steps <= 0:
+            print(f"Error: time_steps={time_steps}")
+            print(f"dt={dt}, dur={dur}")
+            raise ZeroDivisionError
+        intermediate_joint_vals = {}
+        # for each joint in target pose
+        max_steps = 0
         for i in range(len(self.target_pose)):            
             j_vals = Lerp(self.curr_pose[i], math.radians(self.target_pose[i]), time_steps)
+            # print(j_vals)
+            # print(f"=== {len(j_vals)} steps ===")
             if not j_vals:
-                j_vals = [math.radians(self.target_pose[i])]*time_steps
+                # print(f"empty j_vals in {self.joint_names[i]}")
+                j_vals = [math.radians(self.target_pose[i])]*(time_steps)
             
-            intermediate_joint_vals.append(j_vals)
-        return list(map(list, zip(*intermediate_joint_vals)))
+            intermediate_joint_vals[self.joint_names[i]] = j_vals
+            if len(j_vals)>max_steps:
+                max_steps = len(j_vals)
+
+        # To fix the weird issue with interpolation where it goes off by one depending on dt
+        for k in intermediate_joint_vals.keys():
+            if len(intermediate_joint_vals[k]) < max_steps:
+                intermediate_joint_vals[k].append(intermediate_joint_vals[k][-1])
+
+        # for k, v in intermediate_joint_vals.items():
+        #     print(f"{k:<18}", len(v))
+        # print("------")
+        # print(len(intermediate_joint_vals))
+
+        # for iv in list(map(list,zip(*intermediate_joint_vals.values()))):
+        #     with open("intermed_joint_data.csv", '+a', newline='') as my_csv:
+        #         wr = csv.writer(my_csv, quoting=csv.QUOTE_ALL)
+        #         wr.writerow(iv)
+
+        return intermediate_joint_vals
     
+    def prepMotion(self, dt):
+        self.updateTargetPose()
+        self.intermediates = self.generateIntermediateVals(self.target_duration, dt)
+
+    def stepMotion(self, dt):
+        # While there are still keyframes to reach
+        # print(self.keyframe_index)
+        if self.keyframe_index < len(self.motion_handle.keyframes):
+            # If we've reached a target keyframe
+            if not self.intermediates or self.intermediate_index >= max([len(row) for row in self.intermediates.values()]):
+                # move on to next one and generate new in-betweens
+                self.intermediate_index = 0
+                if(self.keyframe_index >= len(self.motion_handle.keyframes)-1):
+                    self.keyframe_index = 0
+                else:
+                    self.keyframe_index += 1
+                # self.curr_pose = self.target_pose
+                # print("kf", self.keyframe_index)
+                self.prepMotion(dt)
+            
+            # print(f"max={max([len(row) for row in self.intermediates.values()])}")
+            # print("before ",self.intermediates.values())
+            # print(self.intermediate_index)
+            self.target_pose = [ v[self.intermediate_index] for v in self.intermediates.values()]
+            
+            # with open("joint_data.csv", '+a', newline='') as my_csv:
+            #     wr = csv.writer(my_csv, quoting=csv.QUOTE_ALL)
+            #     wr.writerow(self.target_pose)
+            
+            self.setJointAngles(1.0)
+            self.intermediate_index += 1
+            currTime = time.time() - self.start_time
+            # if the move was completed faster than a time step,
+            # we wait for the remaining time.
+            if currTime < dt:
+                time.sleep(dt*1.0 - currTime)
+        else:
+            self.keyframe_index = 0
+            print("Done")
+
     # Not used currently
     def playMotion(self, effort):
         self.updateCurrPose()

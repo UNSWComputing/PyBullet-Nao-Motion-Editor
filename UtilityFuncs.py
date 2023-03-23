@@ -12,24 +12,18 @@ WEBOTS_TO_RUNSWIFT = [-1, -1, -1, -1, -1, -1, -1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 1
 # This method does not work as intended.
 # Some edge case is causing frequent infinite loops.
 # The issue is that for some joints, the start and end vals are the
-# same, leading to a step size of zero
+# same, leading to a step size of zero ?
 def Lerp(start_val, end_val, time_step):
     step = round((end_val-start_val)/time_step, 5)
     curr_val = start_val
     lerp_vals = [] # does not include start
     if step > 0:
-        while curr_val+step < end_val:
-            print(step, curr_val+step-end_val)
-            print("L0.6a")
+        while curr_val+step <= end_val:
             curr_val += step
-            print("L0.7a")
             lerp_vals.append(curr_val)
     elif step < 0:
-        while curr_val+step > end_val:
-            print(step, curr_val+step-end_val)
-            print("L0.6b")
+        while curr_val+step >= end_val:
             curr_val += step
-            print("L0.7b")
             lerp_vals.append(curr_val)
     else:
         # raise Exception(f"Step size is {step} which is close to zero")
