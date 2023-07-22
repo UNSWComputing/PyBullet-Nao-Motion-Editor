@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<robot name="spl-22-ball-v2.urdf">
+  <link name="baseLink">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="spl-ball-10.obj" scale="0.08 0.08 0.08"/>
+      </geometry>
+      <material name="spl-ball-10">
+        <texture filename="spl-ball-10.mtl"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	<mesh filename="spl-ball-10.obj" scale="0.08 0.08 0.08"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

@@ -48,7 +48,7 @@ if __name__ == "__main__":
     robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
 
     if USE_GRAVITY:
-        pb.changeDynamics(robot.robot_model, -1, mass=0.01) # Sets the mass of the base link(-1) to 0.
+        pb.changeDynamics(robot.robot_model, -1, mass=0.1) # Sets the mass of the base link(-1) to 0.1. Don't really see a difference between 1, 0.1 and 0.01
         pb.resetBasePositionAndOrientation(robot.robot_model, [0.0, 0.0, 0.38], pb.getQuaternionFromEuler([0.0, 0.0, 0.0]))
     else:
         pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     # motion_handle1.readPosFile("pos/pump-arms-up.pos") # WORKS
     # motion_handle1.readPosFile("pos/jump_1.pos")
     motion_player = MP(robot, motion_handle1)
-    motion_player.loop = False
+    motion_player.loop = True
     
     # for name, joint in robot.joint_dict.items():
     #     print(f"{name:14} | {joint.getLowerLimit():12} | {joint.getUpperLimit():12} | {robot.getAnglesPosition(name):6}")

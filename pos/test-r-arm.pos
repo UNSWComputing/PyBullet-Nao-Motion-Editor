@@ -1,0 +1,15 @@
+Positions taken from LoLAEffector.cpp
+
+  HY    HP    LSP   LSR   LEY   LER   LWY   LHYP  LHR   LHP   LKP   LAP   LAR   RHR   RHP   RKP   RAP   RAR   RSP   RSR   REY   RER   RWY   LH    RH    DUR
+stand
+$ 0     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     1     
+! 0    -10    90    10    0     0     0     0     0     -28   50    -20   0     0     -28   50    -20   0     90    -10   0     0     0     0     0     2000
+
+move right arm forward
+$ 0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2   0.2
+! 0    -10    90    10    0     0     0     0     0     -28   50    -20   0     0     -28   50    -20   0     -90    -10   0     0     0     0     0     2000
+
+move right arm backward
+$ 0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     0     
+! 0    -10    90    10    0     0     0     0     0     -28   50    -20   0     0     -28   50    -20   0     180    -10   0     0     0     0     0     2000
+

@@ -7,6 +7,25 @@ from Plotter import JointErrorBars
 import time
 import csv
 
+class InBetweens:
+    """
+    Collection of in-betweens.
+    """
+    def __init__(self, duration=None, dt=None):
+        self.frames = []
+        self.curr_index = 0
+
+        if duration and dt:
+            self.frames = None
+    
+    def moveToNext(self):
+        self.curr_index += 1
+
+    def reset(self):
+        self.frames = []
+        self.curr_index = 0
+
+
 class MotionPlayer:
     def __init__(self, robot, motion_handle):
         self.loop = False
@@ -71,9 +90,13 @@ class MotionPlayer:
         # for TorqueControl MODE only ?
         # Or maybe interpolation needs to be done between the keyframes ?
 
+    # !!!!! CONTINUE HERE
+    # Need to re-write this to normalize joint travel i.e.
+    # you need to consider that different joints move by different magnitudes
+    # between keyframes.
     def generateIntermediateVals(self, dur, dt):
         # Why are we converting dur to seconds here ?
-        # Because dt is in seconds.
+        # > Because dt is in seconds.
         time_steps = int((dur/1000)//dt) # rounded down, i.e. robot waits for remaining time
         if time_steps <= 0:
             print(f"Error: time_steps={time_steps}")
@@ -117,39 +140,47 @@ class MotionPlayer:
 
     def stepMotion(self, dt):
         # While there are still keyframes to reach
-        # print(self.keyframe_index)
         if self.keyframe_index < len(self.motion_handle.keyframes):
-            # If we've reached a target keyframe
-            if not self.intermediates or self.intermediate_index >= max([len(row) for row in self.intermediates.values()]):
-                # move on to next one and generate new in-betweens
-                self.intermediate_index = 0
-                if(self.keyframe_index >= len(self.motion_handle.keyframes)-1):
-                    self.keyframe_index = 0
-                else:
-                    self.keyframe_index += 1
-                # self.curr_pose = self.target_pose
-                # print("kf", self.keyframe_index)
-                self.prepMotion(dt)
+            # If we've not reached a target keyframe
+            # Check if some intermediates were generated.
+            print(f"key:{self.keyframe_index}, int:{self.intermediate_index}")
+            intermediates_count = max([len(row) for row in self.intermediates.values()]) if self.intermediates else 0
             
-            # print(f"max={max([len(row) for row in self.intermediates.values()])}")
-            # print("before ",self.intermediates.values())
-            # print(self.intermediate_index)
-            self.target_pose = [ v[self.intermediate_index] for v in self.intermediates.values()]
+            if self.intermediates and self.intermediate_index < intermediates_count:
+                # move on to next one and generate new in-betweens
+                print("len:", intermediates_count)
+            
+                
+                # for va in self.intermediates.values():
+                #     print(len(va))
+
+                self.target_pose = [ v[self.intermediate_index] for v in self.intermediates.values()]
             
             # with open("joint_data.csv", '+a', newline='') as my_csv:
             #     wr = csv.writer(my_csv, quoting=csv.QUOTE_ALL)
             #     wr.writerow(self.target_pose)
             
-            self.setJointAngles(1.0)
-            self.intermediate_index += 1
-            currTime = time.time() - self.start_time
-            # if the move was completed faster than a time step,
-            # we wait for the remaining time.
-            if currTime < dt:
-                time.sleep(dt*1.0 - currTime)
+                self.setJointAngles(1.0)
+                self.curr_pose = self.target_pose
+                self.intermediate_index += 1
+                currTime = time.time() - self.start_time
+                # if the move was completed faster than a time step,
+                # we wait for the remaining time.
+                if currTime < dt:
+                    time.sleep(dt*1.0 - currTime)
+            else:
+                self.keyframe_index += 1
+                self.intermediate_index = 0
+                self.intermediates = []
+                if self.keyframe_index < len(self.motion_handle.keyframes):
+                    self.prepMotion(dt)
         else:
-            self.keyframe_index = 0
-            print("Done")
+            if self.loop:
+                self.keyframe_index = 0
+                self.intermediate_index = 0
+                self.intermediates = []
+            else:
+                print("Done")
 
     # Not used currently
     def playMotion(self, effort):

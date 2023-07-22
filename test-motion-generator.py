@@ -1,6 +1,7 @@
 # MotionHandler Test
 
 from MotionHandle import MotionHandle as MH
+from MotionPlayer import MotionPlayer as MP
 
 test_motion = MH()
 
@@ -13,3 +14,5 @@ test_motion = MH()
 
 # Reading .pos files
 test_motion.readPosFile("sit.pos")
+
+motion_player = MP()

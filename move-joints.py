@@ -17,8 +17,8 @@ if __name__ == "__main__":
     client = simulation_manager.launchSimulation(gui=True, auto_step=False)
     
     simulation_manager.setGravity(client, [0.0, 0.0, -9.81])
-    pb.resetDebugVisualizerCamera( cameraDistance=0.5, cameraYaw=65, cameraPitch=-25, cameraTargetPosition=[0,0,0.35])    
-    robot = simulation_manager.spawnNao(client, spawn_ground_plane=True)
+    pb.resetDebugVisualizerCamera( cameraDistance=0.55, cameraYaw=90, cameraPitch=-25, cameraTargetPosition=[0,0,0.25])    
+    robot = simulation_manager.spawnNao(client, spawn_ground_plane=False)
     
     pb.changeDynamics(robot.robot_model, -1, mass=0) # Sets the mass of the base link(-1) to 0.
     # print(pb.getDynamicsInfo(robot.robot_model, -1))
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             if reset_joints >= reset_joints_button_counter:
                 # Can't set slider positions programatically. So this doesn't quite work yet.
                 for joint_parameter in joint_parameters:
-                    pb.writeUserDebugParameter(joint_parameter[0], 0.0)
+                    # pb.writeUserDebugParameter(joint_parameter[0], 0.0)
                     robot.setAngles(
                         joint_parameter[1],
                         0.0, 1.0)
@@ -74,16 +74,23 @@ if __name__ == "__main__":
                     
                     if should_mirror_joints % 2 == 1 and joint_parameter[1][0] != 'H':
                         # mirror joints
-                        # Joint vals aren't always just negative. Corrections need to be
+                        # TODO: Joint vals aren't always just negative. Corrections need to be
                         # made for each pair.
                         side = 'L' if joint_parameter[1][0] == 'R' else 'R'
                         robot.setAngles(
                             [joint_parameter[1], (side + joint_parameter[1][1:])],
                             [val, -val], 1.0)
                     else:
-                        robot.setAngles(
-                            joint_parameter[1],
-                            val, 1.0)
+                        # The HipYawPitch is a coupled joint which is not modelled as such 
+                        # in the URDF as I understand. So we explicitly couple them here.
+                        if "HipYawPitch" in joint_parameter[1]:
+                            robot.setAngles(
+                                [joint_parameter[1], "R"+joint_parameter[1][1:]],
+                                [val, val], 1.0)
+                        else:
+                            robot.setAngles(
+                                joint_parameter[1],
+                                val, 1.0)
 
             X_rot_val = pb.readUserDebugParameter(rotate_X_slider)
             Y_rot_val = pb.readUserDebugParameter(rotate_Y_slider)
@@ -111,4 +118,7 @@ if __name__ == "__main__":
     finally:
         timestamp = datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
         simulation_manager.stopSimulation(client)
-        motion_1.generatePosFile("motion_"+timestamp)
+        
+        # Generate a .pos file only if atleast one keyframe was added.
+        if len(motion_1.keyframes) > 0:
+            motion_1.generatePosFile("motion_"+timestamp)

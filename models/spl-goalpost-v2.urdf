@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<robot name="spl-goalpost.urdf">
+  <link name="baseLink">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="spl-goalpost-v2.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+      <material name="spl-goalpost-v2">
+        <texture filename="spl-goalpost-v2.mtl"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	 	<mesh filename="spl-goalpost-v2.obj" scale="0.09 0.09 0.09"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>
